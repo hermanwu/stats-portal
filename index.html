@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="shortcut icon" href="img/favicon.ico">
+	<meta http-equiv="refresh" content="900">
+	<title>AirWatch Stats Portal</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+	<!-- jquery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	
+<style>
+body{
+    margin: 0 auto;
+    max-width: 900px;
+}
+table{
+	table-layout: fixed;
+}
+table, th, td
+{
+border-collapse:collapse;
+border:1px solid silver ;
+padding: 5px;
+}
+th.agent
+{
+width:180px;
+}
+th.weekNumber
+{
+width:50px;
+}
+.sinceCell
+{
+width:80px;
+}
+th.openAndPending
+{
+width:80px;
+}
+.tiptext{
+text-align: right;
+width: 50px;
+float: right;
+}
+.description {
+    display:none;
+    background:white;
+    position:absolute;
+    height:auto;
+    z-index: 1;
+    width: 80px;
+	text-align:center;
+}
+a:hover 
+{ 
+    background-color: yellow;
+}
+#total
+{
+	font-weight: bold;
+	text-align: right;
+}
+
+.totalScore{
+text-align: center;
+width:60px;
+
+}
+.weightedScore{
+text-align: center;
+font-weight: bold;
+}
+.weeklySolved{
+text-align: center;
+font-weight: bold;
+}
+.totalTicket{
+text-align: center;
+}
+a:link {
+    text-decoration: none;
+    color:black;
+}
+#header-fixed { 
+  background-color:white;
+  position: fixed;
+  top:0px;
+  margin: 0 auto;
+  max-width: 900px;
+  display:none;
+  z-index:1;
+}
+#statsTable .phone{
+	background-color: #FAFAD2;
+}
+#statsTable .web{
+	background-color: #F0F8FF;
+}
+#statsTable .enterprise{
+	background-color: #E0E0F8;
+}
+#pieChart{
+	float:left;
+}
+#navigationBar{
+	height:35px;
+}
+#navTitle{
+	padding-top: 10px;
+	padding-bottom: 0px;
+	font-size: 200%;	
+}
+</style>
+</head>
+
+<body>
+<!-- Modal -->
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3 id="myModalLabel">Add New Member</h3>
+  </div>
+  <div class="modal-body">
+    <p>Email Address:</p>
+    	<input id="addAgentEmail" type="email" name="email" placeholder="FirstLast@air-watch.com">
+    <p>Category: </p>
+    <select id="primaryCategory">
+  		<option>Phone</option>
+  		<option>Web</option>
+	</select>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button id="addMemberButton" class="btn btn-primary">Add Agent</button>
+  </div>
+</div>
+
+
+<div>
+	<div id="navigationBar">
+       <ul class="nav nav-pills pull-right">
+         <li><a href="info.html">About</a></li>
+         <li class="active"><a href="index.html">Support</a></li>
+         <li><a href="temperatureMonitor.html">AST</a></li>
+       </ul>
+       <p id="navTitle" class="muted">aw stats portal</p>
+    </div>
+    
+	<div style="position:relative; padding:0px 0px 10px 0px" >
+		<div style="display:inline-block">
+				--Page will update automatically every 15 mins
+		 </div>
+		 <div  style="display:inline-block; position:absolute; right:0;">
+		   		<select id="teamDropDownBox" style="height:30px; width:120px">
+					<option id="Basic">Basic</option>
+					<option id="Enhanced">Enhanced</option>
+					<option id="Enterprise">Enterprise</option>
+					<option id="T3">T3</option>
+				</select>
+		 </div>
+	</div>
+			
+
+
+	<table id="header-fixed" >
+			<tr>
+				<th><button id="detailButtonClone" class="detailButton btn">show details</button></th>
+				<th>Weekly Solved</th>
+				<th>Total Ticket</th>
+				<th colspan="6">Ticket Age</th>
+				<th colspan="2">Score</th>
+			</tr>
+			<tr>
+				<th class="agent">Name<a class="btn btn-mini" href="#myModal" data-toggle="modal" style="float:left"><i class="icon-plus-sign"></i></a></th>
+				<th class="sinceCell">Since<br></th>
+				<th class="openAndPending">Open & Pending</th>
+				<th class="weekNumber">Week 1</th>
+				<th class="weekNumber">Week 2</th>
+				<th class="weekNumber">Week 3</th>
+				<th class="weekNumber">Week 4</th>
+				<th class="weekNumber">Week 5</th>
+				<th class="weekNumber">Week 6</th>
+				<th class="totalScore">Total</th>
+				<th class="weightedScore">Weighted</th>
+			</tr>
+	</table>
+
+	<table id="statsTable" >
+			<tr>
+				<th><button id="detailButton" class="detailButton btn">show details</button></th>
+				<th>Weekly Solved</th>
+				<th>Total Ticket</th>
+				<th colspan="6">Ticket Age</th>
+				<th colspan="2">Score</th>
+			</tr>
+			
+			<tr>
+				<th class="agent">Name<a class="btn btn-mini" href="#myModal" data-toggle="modal" style="float:left"><i class="icon-plus-sign"></i></a></th>
+				<th class="sinceCell" id="since">Since<br></th>
+				<th class="openAndPending">Open & Pending</th>
+				<th class="weekNumber">Week 1</th>
+				<th class="weekNumber">Week 2</th>
+				<th class="weekNumber">Week 3</th>
+				<th class="weekNumber">Week 4</th>
+				<th class="weekNumber">Week 5</th>
+				<th class="weekNumber">Week 6</th>
+				<th id="totalScore" class="totalScore">Total</th>
+				<th id="weighted" class="weightedScore">Weighted</th>
+			</tr>
+	</table>
+	
+	<div class="row-fluid">    
+          <div class="span6">
+ 				<div id="piechart" style="height: 300px;"></div>
+	  	  </div>
+          <div class="span6">
+ 				<div id="extra">
+					<h3>Week 6+ Tickets:</h3>
+				</div>
+	  	  </div>
+	  </div>
+	
+	
+</div>
+
+	<script src="js/bootstrap.min.js"></script>
+   	<script src="https://code.jquery.com/jquery.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1','packages':['corechart']}]}"></script>
+	<script type="text/javascript" src="js/script.js"></script>
+</body>
+</html>

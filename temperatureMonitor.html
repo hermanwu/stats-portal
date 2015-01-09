@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="shortcut icon" href="image/favicon.ico">
+	<meta http-equiv="refresh" content="900">
+	<title>AirWatch Stats Portal</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+	<!-- jquery library -->
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<!-- d3 library -->
+	<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1','packages':['corechart']}]}"></script>
+<style>
+*{
+        margin: 0 auto;
+        max-width: 900px;
+}
+caption{
+		
+}
+#organizationName{
+		width:500px;
+}
+#redTicket{
+		width: 50px;
+}
+#yellowTicket{
+		width: 50px;
+}
+#totalTempTicket{
+		width:50px;
+}
+.description {
+    display:none;
+    background:white;
+    position:absolute;
+    height:auto;
+    z-index: 1;
+    width: 120px;
+}
+a:hover 
+{ 
+    background-color: yellow;
+}
+.tiptext{
+width: 50px;
+}
+</style>
+
+<script type="text/javascript">	
+
+	var groupIdArray = [20045507, 21550038, 21232998, 22222246, 20823347];
+
+	function getTeam(groupId){
+		var groupName;
+		switch(groupId){
+		case 0: 
+			groupName = "Support AST (NA)";
+			break;
+		
+		case 1: 
+			groupName = "Support Basic (NA)";
+			break;
+
+		case 2: 
+			groupName = "Support Enhanced (NA)";
+			break;
+
+		case 3: 
+			groupName = "Support Enterprise (NA)";
+			break;
+
+		case 4: 
+			groupName = "Support T3 (NA)";
+			break;
+		}
+		return groupName;
+	}
+	
+	function calculateDaysAgo(days){
+		var todayDate = new Date();
+		var daysAgoDate = todayDate - days*1000*60*60*24;
+		var daysAgoToPrint = new Date(daysAgoDate);
+		return daysAgoToPrint.getFullYear()+"-"+(daysAgoToPrint.getMonth()+1)+"-"+daysAgoToPrint.getDate();
+	}
+	
+	function testFunction(createdDate, callback){
+		var companyIdArray = [];
+		$.post("php/APISearch.php",{postFunctionName:"getHeatMapTicket", postCreatedDate:createdDate},function(data){
+			callback(data, companyIdArray);
+		});			
+		//return mondayTimeToPrint.getFullYear()+"-"+(mondayTimeToPrint.getMonth()+1)+"-"+mondayTimeToPrint.getDate();
+	}
+	
+	function ticketBox(ticketNumberArray){
+		var ticketBoxString="";
+		for(var i = 0; i<ticketNumberArray.length;i++){
+		ticketBoxString = ticketBoxString + "<a href=\"https://airwatch.zendesk.com/agent/#/tickets/" + ticketNumberArray[i]["ticketId"] +
+		                                    "\" target=\"_blank\">" + ticketNumberArray[i]["ticketId"] +" - "+ 
+		                                    ticketNumberArray[i]["ticketStatus"] + "</a></br>";
+		}
+		return ticketBoxString;
+	}
+	
+	function compareScorexBigToSmall(a,b){
+		  if (a.score < b.score)
+			    return 1;
+	      if (a.score > b.score)
+			    return -1;
+	      return 0;
+	}
+	
+	
+	function testDraw(organizationTableArray){
+		//$("tbody").remove();
+		for(var i= 0; i < organizationTableArray.length; i++){
+			var total = (organizationTableArray[i]["total"] == 0)? "?":organizationTableArray[i]["total"];
+			$("#customerHeatMapTable").append("<tr id=\""+organizationTableArray[i]["organizationId"]+"\">"+
+					  "<td><a href=\"https://airwatch.zendesk.com/agent/organizations/" +  organizationTableArray[i]["organizationId"] +
+					  "\" target=\"_blank\">" + organizationTableArray[i]["organizationName"]+"</a></td>"+  
+					  "<td class=\"red tiptext\"><div class=\"redCount\">"+ organizationTableArray[i]["red"] +"</div>"+"<div class=\"description\">" + 
+					  ticketBox(organizationTableArray[i]["redTicketArray"]) + "</div></td>"+
+			          "<td class=\"yellow tiptext\"><div class=\"yellowCount\">"+organizationTableArray[i]["yellow"]+"</div>"+"<div class=\"description\">" + 
+			          ticketBox(organizationTableArray[i]["yellowTicketArray"]) + "</div></td>"+
+					  "<td class=\"totalTicketCount\"><div>"+total+"</div></td>"+ 
+					  "<td>"+ getTeam(organizationTableArray[i]["groupId"])+"</td></tr>");
+			if($("#"+ organizationTableArray[i]["organizationId"] +"> .red > .redCount").text() !== "0"){
+				$("#"+ organizationTableArray[i]["organizationId"] +"> .red").css('background-color', '#FA5858');
+			}
+			if($("#"+ organizationTableArray[i]["organizationId"] +"> .yellow > .yellowCount").text() !=="0"){
+				$("#"+ organizationTableArray[i]["organizationId"] +"> .yellow").css('background-color', '#F4FA58');
+			}
+			$(".tiptext").mouseover(function() {
+			    $(this).children(".description").show();
+			}).mouseout(function() {
+			    $(this).children(".description").hide();
+			});
+		}
+		
+	}
+	
+	var getTicketByTemperature = function(data, organizationIdArray){
+		//alert(data);
+		var obj = JSON.parse(data);
+		var organizationTableArray = [];
+		for(var i = 0; i < obj.length; i++){
+			var organizationName = 	obj[i].organization_Name;
+			var organizationId = obj[i].organization_id;
+			var temperature = obj[i].temperature;
+			var groupId = groupIdArray.indexOf(obj[i].group_id);
+			var ticketId = obj[i].id;
+			var ticketStatus = obj[i].status;
+			
+			var ogArrayIndex = organizationIdArray.indexOf(organizationId);
+			
+			if(organizationName === "AirWatch" ){
+				continue;
+			}
+			
+			//create array of objects with a compare function; give points to ticket red ticket:100, yellow: 10, other: 1
+			if(ogArrayIndex==-1){
+				organizationIdArray.push(organizationId);
+				
+				if(temperature == "red"){
+				organizationTableArray.push({organizationId:organizationId, organizationName:organizationName, 
+					                         red:1, yellow:0, total:0, groupId:groupId, score:100000, 
+					                         redTicketArray: [{ticketId: ticketId, ticketStatus: ticketStatus, ticketGroup: groupId}], yellowTicketArray:[]});
+				}
+				else{
+				organizationTableArray.push({organizationId:organizationId, organizationName:organizationName, 
+					                         red:0, yellow:1, total:0, groupId:groupId, score:10000, 
+					                         redTicketArray:[], yellowTicketArray:[{ticketId: ticketId, ticketStatus: ticketStatus, ticketGroup: groupId}]});
+				}					
+			}
+			else{
+				organizationTableArray[ogArrayIndex][temperature]++;
+				if(temperature == "red"){
+					organizationTableArray[ogArrayIndex]["score"] += 100000; 
+					organizationTableArray[ogArrayIndex]["redTicketArray"].push({ticketId: ticketId, ticketStatus: ticketStatus, ticketGroup: groupId}); 
+					organizationTableArray[ogArrayIndex]["groupId"] = Math.max(organizationTableArray[ogArrayIndex]["groupId"],groupId );
+				}
+				else{
+					organizationTableArray[ogArrayIndex]["score"] += 10000;
+					organizationTableArray[ogArrayIndex]["yellowTicketArray"].push({ticketId: ticketId, ticketStatus: ticketStatus, ticketGroup: groupId}); 
+					organizationTableArray[ogArrayIndex]["groupId"] = Math.max(organizationTableArray[ogArrayIndex]["groupId"], groupId);
+				}
+			}
+				
+				//alert("#"+organizationId+"> ."+temperature);
+		}
+		
+		$("#loadingRow > th").text("SORTING...");
+		//alert(organizationTableArray);
+		testDraw(organizationTableArray);
+		
+		var monthAgo = calculateDaysAgo(30);
+		for(var i= 0; i < organizationTableArray.length; i++){
+			var searchQuery = "/search.json?query=created>"+monthAgo+"+type:ticket+organization:"+organizationTableArray[i]["organizationId"];
+			var queryName = organizationTableArray[i]["organizationId"] + "30DayTicket";
+			//alert(organizationTableArray[i]["organizationId"]);
+			var tempTableArrayObject = organizationTableArray[i];
+			$.post("php/APICall.php", {searchQuery: searchQuery, queryName: queryName}, function(data){
+				
+				var obj = JSON.parse(data);
+				if(obj.count!=0){
+					var totalOpenAndPendingTicketCount = obj.count;
+					var orgId = obj.results[0].organization_id;
+					var localIndex = organizationIdArray.indexOf(orgId);
+					organizationTableArray[localIndex]["score"] += obj.count;
+					organizationTableArray[localIndex]["total"] += obj.count;
+					$("#"+ orgId +"> .totalTicketCount").html(obj.count);
+				}
+			});	
+		}
+		
+
+		
+
+		 $(document).ajaxStop(function () {
+			 setTimeout(function(){
+				organizationTableArray.sort(compareScorexBigToSmall);
+				$("tbody").remove();
+				testDraw(organizationTableArray);
+			 }, 1000);
+		  });
+		 
+			 setTimeout(function(){
+				organizationTableArray.sort(compareScorexBigToSmall);
+				$("tbody").remove();
+				testDraw(organizationTableArray);
+			 }, 30000);
+	}
+	
+	
+
+	testFunction(calculateDaysAgo(30), getTicketByTemperature);
+
+
+</script>
+</head>
+
+
+<body>
+<div>
+     <div class="masthead">
+       <ul class="nav nav-pills pull-right">
+         <li><a href="info.html">About</a></li>
+         <li><a href="index.html">Support</a></li>
+         <li class="active"><a href="temperatureMonitor.html">AST</a></li>
+       </ul>
+       <div><h3 class="muted">AirWatch Stats Portal</h3>Customer Heat Map -- Red, Yellow, and Total number of tickets created in past 30 days</div>
+     </div>
+	
+	
+    <table id="customerHeatMapTable" class="table table-striped table-bordered">
+
+         <thead>
+           <tr>
+           		<th id="organizationName">Organization</th>
+           		<th id="redTicket">Red</th>
+           		<th id="yellowTicket">Yellow</th>
+           		<th id="totalTempTicket">Total</th>
+           		<th>Team</th>
+           </tr>
+         </thead>
+         <tbody>
+           <tr id="loadingRow">
+           		<th colspan="5">LOADING...</th>
+           </tr>
+         </tbody>
+       </table>
+	
+</div>
+	<script src="js/bootstrap.min.js"></script>
+   	<script src="https://code.jquery.com/jquery.js"></script>
+    
+</body>
+</html>

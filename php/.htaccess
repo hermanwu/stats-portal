@@ -1,0 +1,4 @@
+AuthName "Protected"
+AuthUserFile "/home3/zwu36/.htpasswds/public_html/passwd"
+AuthType Basic
+require valid-user

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script type="text/javascript">
+	function doSomething(){
+		//var emailArray = ["HermanWu","MarkRusinski","NileshPawar"];
+		testFunction("haha", "monday", alertFunc);
+	}
+	
+	
+	function testFunction(email, monday, callback){
+		$.post("php/APISearch.php",{postEmail:email, monday:monday},function(data){
+			//alert(data);
+			callback(data);
+		});			
+		//return mondayTimeToPrint.getFullYear()+"-"+(mondayTimeToPrint.getMonth()+1)+"-"+mondayTimeToPrint.getDate();
+	}
+	
+	
+	var alertFunc = function(data){
+		alert(data);
+	}
+
+</script>
+</head>
+
+
+
+<body>
+	<a href="#" onclick="doSomething();">Click Me!</a>
+	<div id="test"></div>
+</body>
+</html>
+</html>

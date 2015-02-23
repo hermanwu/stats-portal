@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="holder/|google-code-prettify/" kind="src" path="__MACOSX/mamp/bootstrap-2.3.2/docs/assets/js"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-2.3.2/docs/assets/js/google-code-prettify"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-2.3.2/docs/assets/js/holder"/>
+	<classpathentry excluding="node_modules/hogan.js/web/builds/1.0.5/|node_modules/hogan.js/lib/|node_modules/|node_modules/hogan.js/tools/|node_modules/hogan.js/web/1.0.0/|node_modules/hogan.js/web/builds/1.0.0/|node_modules/hogan.js/test/|node_modules/hogan.js/web/builds/1.0.3/" kind="src" path="__MACOSX/mamp/bootstrap-2.3.2/docs/build"/>
+	<classpathentry excluding="hogan.js/web/builds/1.0.5/|hogan.js/lib/|hogan.js/tools/|hogan.js/web/1.0.0/|hogan.js/web/builds/1.0.0/|hogan.js/test/|hogan.js/web/builds/1.0.3/" kind="src" path="__MACOSX/mamp/bootstrap-2.3.2/docs/build/node_modules"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-2.3.2/docs/build/node_modules/hogan.js/lib"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-2.3.2/docs/build/node_modules/hogan.js/test"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-2.3.2/docs/build/node_modules/hogan.js/tools"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-2.3.2/docs/build/node_modules/hogan.js/web/1.0.0"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-2.3.2/docs/build/node_modules/hogan.js/web/builds/1.0.0"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-2.3.2/docs/build/node_modules/hogan.js/web/builds/1.0.3"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-2.3.2/docs/build/node_modules/hogan.js/web/builds/1.0.5"/>
+	<classpathentry excluding="tests/unit/|tests/vendor/|tests/" kind="src" path="__MACOSX/mamp/bootstrap-2.3.2/js"/>
+	<classpathentry excluding="unit/|vendor/" kind="src" path="__MACOSX/mamp/bootstrap-2.3.2/js/tests"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-2.3.2/js/tests/unit"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-2.3.2/js/tests/vendor"/>
+	<classpathentry excluding="js/|js/tests/unit/|docs/examples/tooltip-viewport/|docs/assets/js/|dist/js/|js/tests/vendor/|docs/assets/js/_vendor/|docs/dist/js/|docs/assets/js/_src/|grunt/|docs/examples/offcanvas/" kind="src" path="__MACOSX/mamp/bootstrap-3.2.0"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-3.2.0/dist/js"/>
+	<classpathentry excluding="_vendor/|_src/" kind="src" path="__MACOSX/mamp/bootstrap-3.2.0/docs/assets/js"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-3.2.0/docs/assets/js/_src"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-3.2.0/docs/assets/js/_vendor"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-3.2.0/docs/dist/js"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-3.2.0/docs/examples/offcanvas"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-3.2.0/docs/examples/tooltip-viewport"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-3.2.0/grunt"/>
+	<classpathentry excluding="tests/unit/|tests/vendor/" kind="src" path="__MACOSX/mamp/bootstrap-3.2.0/js"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-3.2.0/js/tests/unit"/>
+	<classpathentry kind="src" path="__MACOSX/mamp/bootstrap-3.2.0/js/tests/vendor"/>
+	<classpathentry excluding="js/|docs/dist/js/|docs/assets/js/_vendor/|docs/examples/offcanvas/|grunt/|js/tests/unit/|docs/examples/tooltip-viewport/|js/tests/vendor/|dist/js/|docs/assets/js/|docs/assets/js/_src/" kind="src" path="bootstrap-3.2.0"/>
+	<classpathentry kind="src" path="bootstrap-3.2.0/dist/js"/>
+	<classpathentry excluding="_vendor/|_src/" kind="src" path="bootstrap-3.2.0/docs/assets/js"/>
+	<classpathentry kind="src" path="bootstrap-3.2.0/docs/assets/js/_src"/>
+	<classpathentry kind="src" path="bootstrap-3.2.0/docs/assets/js/_vendor"/>
+	<classpathentry kind="src" path="bootstrap-3.2.0/docs/dist/js"/>
+	<classpathentry kind="src" path="bootstrap-3.2.0/docs/examples/offcanvas"/>
+	<classpathentry kind="src" path="bootstrap-3.2.0/docs/examples/tooltip-viewport"/>
+	<classpathentry kind="src" path="bootstrap-3.2.0/grunt"/>
+	<classpathentry excluding="tests/unit/|tests/vendor/" kind="src" path="bootstrap-3.2.0/js"/>
+	<classpathentry kind="src" path="bootstrap-3.2.0/js/tests/unit"/>
+	<classpathentry kind="src" path="bootstrap-3.2.0/js/tests/vendor"/>
+	<classpathentry kind="src" path="js"/>
+	<classpathentry excluding="dist/js/|js/tests/unit/|docs/examples/tooltip-viewport/|docs/assets/js/_vendor/|grunt/|docs/dist/js/|js/|docs/assets/js/|js/tests/vendor/|docs/examples/offcanvas/|docs/assets/js/_src/" kind="src" path="mamp/bootstrap-3.2.0"/>
+	<classpathentry kind="src" path="mamp/bootstrap-3.2.0/dist/js"/>
+	<classpathentry excluding="_vendor/|_src/" kind="src" path="mamp/bootstrap-3.2.0/docs/assets/js"/>
+	<classpathentry kind="src" path="mamp/bootstrap-3.2.0/docs/assets/js/_src"/>
+	<classpathentry kind="src" path="mamp/bootstrap-3.2.0/docs/assets/js/_vendor"/>
+	<classpathentry kind="src" path="mamp/bootstrap-3.2.0/docs/dist/js"/>
+	<classpathentry kind="src" path="mamp/bootstrap-3.2.0/docs/examples/offcanvas"/>
+	<classpathentry kind="src" path="mamp/bootstrap-3.2.0/docs/examples/tooltip-viewport"/>
+	<classpathentry kind="src" path="mamp/bootstrap-3.2.0/grunt"/>
+	<classpathentry excluding="tests/unit/|tests/vendor/" kind="src" path="mamp/bootstrap-3.2.0/js"/>
+	<classpathentry kind="src" path="mamp/bootstrap-3.2.0/js/tests/unit"/>
+	<classpathentry kind="src" path="mamp/bootstrap-3.2.0/js/tests/vendor"/>
+	<classpathentry kind="src" path="mamp/js"/>
+	<classpathentry kind="src" path="mamp/xcache-admin"/>
+	<classpathentry kind="src" path="xcache-admin"/>
+	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path=""/>
+</classpath>

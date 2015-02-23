@@ -12,7 +12,17 @@ $conn = new mysqli($servername, $username, $password);
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
-} 
+}
+
+
+echo date('Y-m-d', time()-60*60*24);
+
+$teamID = 21232998;
+$cacheNameUrl = "cacheTicketCall".$teamID;
+$cacheFile = '../cache' . DIRECTORY_SEPARATOR .$cacheNameUrl;
+$fh = fopen($cacheFile, 'r');
+$cacheTime = trim(fgets($fh));
+echo $cacheTime;
 /*
     define("ZDUSER", "hermanwu@air-watch.com:12345");
     define("ZDURL", "https://airwatch.zendesk.com/api/v2");

@@ -251,7 +251,7 @@ $(document).ready(function(){
 				"\" class = \"" + 
 				teamName + " statsRows\">" +
 				"<td class = \"name\">"+
-				"<a href=\"#\" id=\"showDetail_" + agentIdArray[i] + "\" style=\"margin-left:20px\">" + simplifyName(agentNames[i]) + "</a>" +
+				"<a href=\"#\" id=\"showDetail_" + agentIdArray[i] + "\" style=\"margin-left:20px\">" + agentNames[i] + "</a>" +
 				"<a href=\"#\" id=\"deleteUser_" + agentIdArray[i] + "\" class=\"btn-mini deleteUser\" style=\"float:left\"><i class=\"icon-minus-sign\"></i></a>"+
 				"</td>" +
 				"<td class = \"weeklySolved\"></td>" +

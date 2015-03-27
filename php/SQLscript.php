@@ -19,13 +19,17 @@ function selectOneColumn($DBconnection, $columnName, $tableName, $conditions){
 function getActiveTicket($connection, $agentId){
 	try{
 		$returnArray = array();
-		$stmt=$connection->prepare("SELECT * FROM tickets WHERE assigneeId =".$agentId." AND (ticketstatus = 'pending' OR ticketstatus = 'open')");
+		$stmt=$connection->prepare("SELECT * FROM tickets 
+									WHERE assigneeId =".$agentId." AND (ticketstatus = 'pending' OR ticketstatus = 'open') 
+									ORDER BY LastAgentCommentDate");
 		$stmt->execute();
 		$result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
 		foreach($stmt->fetchAll() as $rows){
+			$newTimeString = date("m-d", strtotime($rows['LastAgentCommentDate']));
 			$returnArray[] = array(
 				"ticketID" => $rows['TicketID'],
-				"createdDate" => $rows['CreatedDate']
+				"createdDate" => $rows['CreatedDate'],
+				"updatedDate" => $newTimeString
 			); 
 		}
 		$returnjson = json_encode($returnArray);

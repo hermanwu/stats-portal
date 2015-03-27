@@ -144,6 +144,7 @@ $(document).ready(function(){
 		function getActiveTicket(email, emailAddress, teamType){
 			$.post("php/action.php",{action:'getActiveTicket',input1:email},function(data){
 				var weekArray = [[],[],[],[],[],[]];
+				var totalArray = [];
 				var i;
 				var week;
 				
@@ -153,6 +154,9 @@ $(document).ready(function(){
 					week = calculateWeek(obj[i]['createdDate']);
 					//alert(week);
 					index = Math.floor(week);
+					//totalArray.push(obj[i]['ticketID']+" "+)
+					var tempObj = {'ticketID': obj[i]['ticketID'], 'updatedDate': obj[i]['updatedDate']};
+					totalArray.push(tempObj);
 					if (index > 5){
 						var oldTicketUrl = "\"https://airwatch.zendesk.com/agent/#/tickets/" + obj[i]['ticketID'] + "\"";
 						$("#extra").append("<a href="+oldTicketUrl+" target=\"_blank\">"+ obj[i]['ticketID'] + ": " + emailAddress + " --"+(index+1)+" weeks old"+ "<\a>");
@@ -160,13 +164,13 @@ $(document).ready(function(){
 					}
 					else{
 						//alert(obj[i]['ticketID']);
-						weekArray[index].push(obj[i]['ticketID']);
+						weekArray[index].push(tempObj);
 					}
 				}	
 				
 				//alert(weekArray);
 				var openTicketNum =obj.length;
-				$("#" + email + "> .totalTicket").append(openTicketNum);
+				$("#" + email + "> .totalTicket").append("<div class=\"tiptext\">" + openTicketNum + "<div class=\"description\">" + ticketBox(totalArray) + "</div>" + "</div>");
 				
 				var temp2 = $("#totalTicket").text();
 				$("#totalTicket").text(+temp2 + +openTicketNum);
@@ -217,34 +221,6 @@ $(document).ready(function(){
 			return score;
 		}
 		
-		function ticketSummary(object, emailAddress, agentId){
-
-			
-			$.post("php/action.php",{action:'getActiveTicket',input1:agentId},function(data){
-				var weekArray = [[],[],[],[],[],[]];
-				var i;
-				var week;
-				
-				var obj = JSON.parse(data);
-				//alert(obj[0]['createdDate']);
-				for(i=0; i<obj.length; i++){
-					week = calculateWeek(obj[i]['createdDate']);
-					//alert(week);
-					index = Math.floor(week);
-					if (index > 5){
-						var oldTicketUrl = "\"https://airwatch.zendesk.com/agent/#/tickets/" + obj[i]['ticketID'] + "\"";
-						$("#extra").append("<a href="+oldTicketUrl+" target=\"_blank\">"+ obj[i]['ticketID'] + ": " + emailAddress + " --"+(index+1)+" weeks old"+ "<\a>");
-						$("#extra").append("</br>");
-					}
-					else{
-						//alert(obj[i]['ticketID']);
-						weekArray[index].push(obj[i]['ticketID']);
-					}
-				}
-				return weekArray;
-				//alert(obj[0]['createdDate']);
-			});
-		}
 		
 		//generate pie chart data
 		function generatePieChartData(){
@@ -299,7 +275,11 @@ $(document).ready(function(){
 		function ticketBox(ticketArray){
 			ticketBoxString="";
 			for(var i = 0; i < ticketArray.length; i++){
-				ticketBoxString = ticketBoxString + "<a href=\"https://airwatch.zendesk.com/agent/#/tickets/" + ticketArray[i] +"\" target=\"_blank\">" + ticketArray[i] + "</a></br>";
+				ticketBoxString = ticketBoxString + "<a href=\"https://airwatch.zendesk.com/agent/#/tickets/" + ticketArray[i]['ticketID'] +"\" target=\"_blank\">" 
+								+ ticketArray[i]['updatedDate'] 
+								+ ": " 
+								+ ticketArray[i]['ticketID'] 
+								+ "</a></br>";
 			}
 			return ticketBoxString;
 		}	   

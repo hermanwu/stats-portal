@@ -1,6 +1,6 @@
 <?php
-	//define("ZDUSER", "AndreCrichlow@air-watch.com:abc123");
-    define("ZDUSER", "hermanwu@air-watch.com:12345");
+	define("ZDUSER", "AndreCrichlow@air-watch.com:abc123");
+    //define("ZDUSER", "hermanwu@air-watch.com:12345");
     define("ZDURL", "https://airwatch.zendesk.com/api/v2");
     
     function curlWrap($url, $json, $action)

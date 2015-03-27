@@ -1,6 +1,7 @@
 <?php 
-include 'dbInfor.php';
 include 'ZendeskAPICurlCall.php';
+include 'dbInfor.php';
+
 
 $agentEmail=$_POST['agentEmail'];
 //$agentEmail="hermanwu@air-watch.com";
@@ -31,9 +32,8 @@ else{
 					.$category.")";
 	
 	try{
-		$conn = new PDO("mysql:host=$servername;dbname=$dbname",$username,$password);
-		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		$conn->exec($sql);
+		$PDOconnection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		$PDOconnection->exec($sql);
 		echo 1;
 		
 	}

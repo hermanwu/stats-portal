@@ -16,13 +16,65 @@ function selectOneColumn($DBconnection, $columnName, $tableName, $conditions){
 	return $returnArray;
 }
 
-function getTeamID($teamName){
-	if($teamName == 'Enhanced' ){
-		return 21232998;
+function getActiveTicket($connection, $agentId){
+	try{
+		$returnArray = array();
+		$stmt=$connection->prepare("SELECT * FROM tickets WHERE assigneeId =".$agentId." AND (ticketstatus = 'pending' OR ticketstatus = 'open')");
+		$stmt->execute();
+		$result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
+		foreach($stmt->fetchAll() as $rows){
+			$returnArray[] = array(
+				"ticketID" => $rows['TicketID'],
+				"createdDate" => $rows['CreatedDate']
+			); 
+		}
+		$returnjson = json_encode($returnArray);
+		return $returnjson;
 	}
-	else{
-		return 0;
+	catch(PDOException $e){
+		return "Error: ".$e->getMessage();
 	}
 }
+function retrieveActiveTicketArray($connection, $agentId){
+	try{
+		$returnArray = array();
+		$stmt=$connection->prepare("SELECT * FROM tickets WHERE assigneeId =".$agentId." AND (ticketstatus = 'pending' OR ticketstatus = 'open')");
+		$stmt->execute();
+		$result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
+		foreach($stmt->fetchAll() as $rows){
+			$returnArray[] = $rows['TicketID'];
+			$returnArray[] = $rows['LastAgentCommentDate'];
+		}
+		$returnjson = json_encode($returnArray);
+		return $returnjson;
+	}
+	catch(PDOException $e){
+		return "Error: ".$e->getMessage();
+	}
+}
+
+function setTicketToNotUpdated($connection){
+	try{
+		$sql = "UPDATE tickets SET Updated = 0 WHERE (Updated IS NULL OR Updated = 1)";
+		$stmt=$connection->prepare($sql);
+		$stmt->execute();
+	}
+	catch(PDOException $e){
+		return "Error: ".$e->getMessage();
+	}
+}
+
+
+function closeNotUpdatedTicket($connection, $agentId){
+	try{
+		$sql = "UPDATE tickets SET TicketStatus = 'closed' WHERE Updated = 0 AND AssigneeID = ".$agentId;
+		$stmt=$connection->prepare($sql);
+		$stmt->execute();
+	}
+	catch(PDOException $e){
+		return "Error: ".$e->getMessage();
+	}
+}
+
 
 ?>

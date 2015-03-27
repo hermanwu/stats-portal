@@ -20,8 +20,6 @@
     		fclose($fh);
     		unlink($cacheFile);
     	}
-		
-
     	$json = curlWrap($url, null, "GET");
     	 
     	$fh = fopen($cacheFile, 'w');

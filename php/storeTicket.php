@@ -1,18 +1,15 @@
 <?php
+//ini_set('MAX_EXECUTION_TIME', -1);
 ini_set('display_errors', 'On');
-//include 'ZendeskAPICurlCall.php';
 include 'dbInfor.php';
 include 'SQLscript.php';
-//include 'APICall.php';
 include 'ZendeskAPICurlCall.php';
 include 'pdoSchedule.php';
 
 $con=mysqli_connect($servername,$username,$password, $dbname);
 
-//$teamID = $_POST["postTeam"];
-$teamID = 21232998; 
-
-//selectSchedule($dbConnection);
+$teamID = $_POST["postTeam"];
+//$teamID = 21232998; 
 
 $cacheNameUrl = "cacheTicketCall".$teamID;
 
@@ -33,60 +30,63 @@ if (file_exists($cacheFile)) {
 $fh = fopen($cacheFile, 'w');
 fwrite($fh, time() . "\n");
 fclose($fh);
-$testEmails = selectOneColumn($con, 'Email', 'agents', 'TeamID='.$teamID);
 
+$testEmails = selectOneColumn($con, 'ZenDeskID', 'agents', 'TeamID='.$teamID);
 
 // Check connection
 if (mysqli_connect_errno()) {
 	echo "Failed to connect to MySQL: " . mysqli_connect_error();
 }
 
-$yesterdayDate = date('Y-m-d', time()-60*60*24);
+setTicketToNotUpdated($PDOconnection);
+
+/*
+$lastUpdatedTimeString = selectSchedule($dbConnection, $teamID);
+$lastUpdatedTime = date_create_from_format('Y-m-d h:i a', $lastUpdatedTimeString);
+$beforeLastUpdatedDate = date('Y-m-d', $lastUpdatedTime->getTimestamp()-60*60*24);
+*/
 //store this time to database as the updated time;
 
-foreach ($testEmails as $email)
+foreach ($testEmails as $agentId)
 {
-	$openTicketQuery ="/search.json?query=updated>".$yesterdayDate."+assignee:".$email."+type:ticket";
-	
-	$queryName = $email."Active";
+	$openTicketQuery ="/search.json?query=assignee:".$agentId."+type:ticket+status<solved";
 	$jsonString = curlWrap($openTicketQuery, null, "GET");
 	$jsonObj = json_decode($jsonString, true);
 	//wait 5 secs
-	//sleep(5);
-	if($email=="christophermccloskey@air-watch.com"){
+	//sleep(1);
 	foreach ($jsonObj['results'] as $obj)
 	{
-		$assigneeId = $obj['assignee_id'];
-		//echo $assigneeId;
-		$ticketID = $obj['id'];
-		echo $ticketID;
-		$ticketCreatedDate = $obj['created_at'];
-		//echo $ticketCreatedDate;
-		$ticketUpdateData = $obj['updated_at'];
-		$ticketStatus = $obj['status'];
-		$ticketType = $obj['type'];
-		$ticketSubject = mysqli_real_escape_string($con, $obj['subject']);
-		$ticketPriority = $obj['priority'];
-		$groupID = $obj['group_id'];
+			$assigneeId = $obj['assignee_id'];
+			//echo $assigneeId;
+			$ticketID = $obj['id'];
+			//echo $ticketID;
+			$ticketCreatedDate = $obj['created_at'];
+			//echo $ticketCreatedDate;
+			$ticketUpdateData = $obj['updated_at'];
+			$ticketStatus = $obj['status'];
+			$ticketType = $obj['type'];
+			$ticketSubject = mysqli_real_escape_string($con, $obj['subject']);
+			$ticketPriority = $obj['priority'];
+			$groupID = $obj['group_id'];
 		
-		$ticketCommentQuery ="/tickets/".$obj['id']."/comments.json";
-		$ticketCommentJson = curlWrap($ticketCommentQuery, null, "GET");
+			$ticketCommentQuery ="/tickets/".$obj['id']."/comments.json";
+			$ticketCommentJson = curlWrap($ticketCommentQuery, null, "GET");
 		
-		//transfer comment from string to json object
-		$ticketCommentJsonObj = json_decode($ticketCommentJson, true);
-		//get the number of comments
-		$sizeOfComments = $ticketCommentJsonObj['count'];
-		$endIndex = $sizeOfComments-1;
+			//transfer comment from string to json object
+			$ticketCommentJsonObj = json_decode($ticketCommentJson, true);
+			//get the number of comments
+			$sizeOfComments = $ticketCommentJsonObj['count'];
+			$endIndex = $sizeOfComments-1;
 		
-		while ($ticketCommentJsonObj['comments'][$endIndex]['public'] != true ||
-			   $ticketCommentJsonObj['comments'][$endIndex]['author_id'] != $assigneeId)
-		{
-			if ($endIndex == 0){
-				break;
+			while ($ticketCommentJsonObj['comments'][$endIndex]['public'] != true ||
+				   $ticketCommentJsonObj['comments'][$endIndex]['author_id'] != $assigneeId)
+			{
+				if ($endIndex == 0){
+					break;
+				}
+				$endIndex--;
 			}
-			$endIndex--;
-		}
-		$ticketLastUpdatedDate = $ticketCommentJsonObj['comments'][$endIndex]['created_at'];	
+			$ticketLastUpdatedDate = $ticketCommentJsonObj['comments'][$endIndex]['created_at'];	
 		
 		mysqli_query($con,"REPLACE INTO tickets (
 				TicketID, 
@@ -98,7 +98,8 @@ foreach ($testEmails as $email)
 				Subject,
 				Priority,
 				GroupID,
-				UpdatedDate) VALUES ("
+				UpdatedDate,
+				Updated) VALUES ("
 			.$ticketID.", "
 			.$assigneeId.", '"
 			.(string)$ticketCreatedDate."', '"
@@ -108,11 +109,14 @@ foreach ($testEmails as $email)
 			.(string)$ticketSubject."', '"
 			.(string)$ticketPriority."', '"
 			.$groupID."', '"
-			.(string)$ticketUpdateData."')");
+			.(string)$ticketUpdateData."', 1)");
 	}
-	}
+	closeNotUpdatedTicket($PDOconnection, $agentId);
 }
-updateSchedule($dbConnection);
+
+
+
+updateSchedule($dbConnection, $teamID);
 
 mysqli_close($con);
 ?>

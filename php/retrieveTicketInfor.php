@@ -1,6 +1,8 @@
 <?php 
-include 'ZendeskAPICurlCall.php';
-include 'dbInfor.php';
+
+/*
+//include 'ZendeskAPICurlCall.php';
+//include 'dbInfor.php';
 $con=mysqli_connect($servername,$username,$password, $dbname);
 
 // Check connection
@@ -8,13 +10,12 @@ if (mysqli_connect_errno()) {
 	echo "Failed to connect to MySQL: " . mysqli_connect_error();
 }
 
-	$agentName = $_POST["agentName"];
-
-	//$email = $_POST["postEmail"];
+	//$agentName = $_POST["emailAddress"];
+	$agentName = 'sajindrapradhananga@air-watch.com';
+	
 	$url =$agentName."Active";
 	$cacheFile = '../cache' . DIRECTORY_SEPARATOR . $url;
 	$fh = fopen($cacheFile, 'r');
-
 	$cacheTime = trim(fgets($fh));
 	$jsonActiveTickets = fgets($fh);
 	$jsonObj = json_decode($jsonActiveTickets, true);
@@ -32,6 +33,7 @@ if (mysqli_connect_errno()) {
 		$row = mysqli_fetch_array($result);
 		if ( $row == null)
 		{	
+			echo "no db";
 			$ticketCommentQuery ="/tickets/".$ticketID."/comments.json";
 			$ticketCommentJson = curlWrap($ticketCommentQuery, null, "GET");
 			$ticketCommentJsonObj = json_decode($ticketCommentJson, true);
@@ -48,35 +50,8 @@ if (mysqli_connect_errno()) {
 			$lastUpdatedTimeArray[]=$ticketLastUpdatedDate;
 		}
 		else{
-				//echo $row['LastAgentCommentDate'];
-				//echo $row['LastAgentCommentDate'];
 			$lastUpdatedTimeArray[] = $row['LastAgentCommentDate'];
 		}	
-		/*
-		$ticketCommentQuery ="/tickets/".$obj['id']."/comments.json";
-		$ticketCommentJson = curlWrap($ticketCommentQuery, null, "GET");
-	
-		//transfer comment from string to json object
-		$ticketCommentJsonObj = json_decode($ticketCommentJson, true);
-		//get the number of comments
-		$sizeOfComments = $ticketCommentJsonObj['count'];
-		$endIndex = $sizeOfComments-1;
-	
-		while ($ticketCommentJsonObj['comments'][$endIndex]['public'] != true ||
-				$ticketCommentJsonObj['comments'][$endIndex]['author_id'] != $assigneeId){
-			$endIndex--;
-			if ($endIndex == 0){
-				break;
-			}
-		}
-		$ticketLastUpdatedDate = $ticketCommentJsonObj['comments'][$endIndex]['created_at'];
-	
-		mysqli_query($con,"REPLACE INTO Tickets (TicketID, AssigneeID, CreatedDate, LastAgentCommentDate) VALUES ("
-					.$ticketID.", "
-					.$assigneeId.", '"
-					.(string)$ticketCreatedDate."', '"
-					.(string)$ticketLastUpdatedDate."')");
-		*/
    }
    //echo $lastUpdatedTimeArray[1];
    $js_array = json_encode($lastUpdatedTimeArray);
@@ -85,4 +60,5 @@ if (mysqli_connect_errno()) {
    //echo $ticketArray[0];
    //echo $jsonActiveTickets;
    mysqli_close($con);
+   */
 ?>

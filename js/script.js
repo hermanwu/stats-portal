@@ -4,7 +4,6 @@ $(document).ready(function(){
 // VARIABLE
 		//$(".active > a").text("Enhanced");
 		var activeTab = "Enhanced";
-		
 		//setup local storage
 		if (typeof(Storage) != "undefined") {
 			if(localStorage.getItem("currentTab")){
@@ -17,32 +16,24 @@ $(document).ready(function(){
 		}
 		
 		$("#teamDropDownBox").change(function(){
-			clearTable();
+			//clearTable();
 			var selectedTeam = $(this).val();
 			localStorage.setItem("currentTab", selectedTeam);
 			teamId = getTeamId(selectedTeam);
-			loadTable(teamId);
-			
+			location.reload();
+			//loadTable(teamId);
 		});
 		
-		
-		//localStorage.clear();
-			
-		//$(".active > a").text("haha");
-		//localStorage.clear();
 		var teamId = getTeamId(activeTab);
-		//alert(window.location);
-		    
 		var phoneTeam = [];	
 		var webTeam = [];
-		
 		var totaloneday = 0;
 		var totaltwoday = 0;
 		var totalplusday = 0;
 		
 		
 // HELP FUNCTIONS
-		
+			
 		function getTeamId(activeTab){
 			if(activeTab === "Enhanced"){
 				return 21232998;
@@ -64,7 +55,6 @@ $(document).ready(function(){
 		}
 		
 		function clearTable(){
-			
 			$("#total").remove();
 			$(".statsRows").remove();
 			$(".extra").remove();
@@ -124,8 +114,14 @@ $(document).ready(function(){
 		}
 		
 // DATA PROCESSING
-		
 		//get Data from Zendesk and put them into table
+		function getLastUpdatedTime(){
+			//$("#lastUpdatedTime").append("test");
+			$.post("php/action.php",{action: 'selectSchedule', input1: teamId}, function(data){
+				$("#lastUpdatedTime").append(data);
+			});
+		}
+		
 		function getTicketStats(agentIdArray, nameArray, emailArray, teamType){
 			var monday = calculateMonday();
 			for(var i=0;i<agentIdArray.length;i++){
@@ -133,7 +129,6 @@ $(document).ready(function(){
 				getActiveTicket(agentIdArray[i], emailArray[i], teamType);
 			}
 		}
-		
 		
 		function getWeeklySolvedCount(emailPrefix, emailAddress, monday){
 				var getWeeklySolvedQuery = "/search.json?query=solved>"+monday+"+assignee:"+emailAddress+"+type:ticket+status>pending";
@@ -147,11 +142,30 @@ $(document).ready(function(){
 		}
 		
 		function getActiveTicket(email, emailAddress, teamType){
-			var getActiveTicketQuery = "/search.json?query=assignee:"+emailAddress+"+type:ticket+status<solved";
-			$.post("php/APICall.php", {searchQuery: getActiveTicketQuery, queryName:emailAddress+"Active"}, function(data){
-				var obj = JSON.parse(data);	
-				var weekArray = ticketSummary(obj, emailAddress);
-				var openTicketNum =obj.results.length;
+			$.post("php/action.php",{action:'getActiveTicket',input1:email},function(data){
+				var weekArray = [[],[],[],[],[],[]];
+				var i;
+				var week;
+				
+				var obj = JSON.parse(data);
+				//alert(obj[0]['createdDate']);
+				for(i=0; i<obj.length; i++){
+					week = calculateWeek(obj[i]['createdDate']);
+					//alert(week);
+					index = Math.floor(week);
+					if (index > 5){
+						var oldTicketUrl = "\"https://airwatch.zendesk.com/agent/#/tickets/" + obj[i]['ticketID'] + "\"";
+						$("#extra").append("<a href="+oldTicketUrl+" target=\"_blank\">"+ obj[i]['ticketID'] + ": " + emailAddress + " --"+(index+1)+" weeks old"+ "<\a>");
+						$("#extra").append("</br>");
+					}
+					else{
+						//alert(obj[i]['ticketID']);
+						weekArray[index].push(obj[i]['ticketID']);
+					}
+				}	
+				
+				//alert(weekArray);
+				var openTicketNum =obj.length;
 				$("#" + email + "> .totalTicket").append(openTicketNum);
 				
 				var temp2 = $("#totalTicket").text();
@@ -203,29 +217,33 @@ $(document).ready(function(){
 			return score;
 		}
 		
-		
-		
-		function ticketSummary(object, emailAddress){
-			var weekArray = [[],[],[],[],[],[]];
-			var i;
-			var week;
-			//alert(object.results);
-			if(typeof (object.results.length) !="undefined"){
-				for (i=0; i<object.results.length; i++){
-					week = calculateWeek(object.results[i].created_at);
+		function ticketSummary(object, emailAddress, agentId){
+
+			
+			$.post("php/action.php",{action:'getActiveTicket',input1:agentId},function(data){
+				var weekArray = [[],[],[],[],[],[]];
+				var i;
+				var week;
+				
+				var obj = JSON.parse(data);
+				//alert(obj[0]['createdDate']);
+				for(i=0; i<obj.length; i++){
+					week = calculateWeek(obj[i]['createdDate']);
+					//alert(week);
 					index = Math.floor(week);
-					//check whehter user has ticket more than 6 weeks old
 					if (index > 5){
-						var oldTicketUrl = "\"https://airwatch.zendesk.com/agent/#/tickets/" + object.results[i].id + "\"";
-						$("#extra").append("<a href="+oldTicketUrl+" target=\"_blank\">"+object.results[i].id+": "+ emailAddress+" --"+(index+1)+" weeks old"+ "<\a>");
+						var oldTicketUrl = "\"https://airwatch.zendesk.com/agent/#/tickets/" + obj[i]['ticketID'] + "\"";
+						$("#extra").append("<a href="+oldTicketUrl+" target=\"_blank\">"+ obj[i]['ticketID'] + ": " + emailAddress + " --"+(index+1)+" weeks old"+ "<\a>");
 						$("#extra").append("</br>");
 					}
 					else{
-					weekArray[index].push(object.results[i].id);
+						//alert(obj[i]['ticketID']);
+						weekArray[index].push(obj[i]['ticketID']);
 					}
 				}
-			}
-			return weekArray;
+				return weekArray;
+				//alert(obj[0]['createdDate']);
+			});
 		}
 		
 		//generate pie chart data
@@ -355,9 +373,9 @@ $(document).ready(function(){
 		
 		
 		
-	   function drawChart(agentName, emailAddress, teamType) {
-		   $.post("php/retrieveTicketInfor.php", {agentName: emailAddress}, function(data){
-			   	var updatedTime;
+	   function drawChart(agentId, emailAddress, teamType) {
+		   $.post("php/action.php", {action:'retrieveActiveTicketArray',input1:agentId}, function(data){
+			    var updatedTime;
 				var numOfAgedTicket = [0,0,0];
 				var obj = JSON.parse(data);
 				var monday = new Date(calculateMonday());
@@ -365,7 +383,7 @@ $(document).ready(function(){
 					updatedTime = new Date(obj[i]);
 					calculateResponseTime(updatedTime, monday, numOfAgedTicket);
 				}
-		   		var chartDiv = "chart_div_" + agentName;
+		   		var chartDiv = "chart_div_" + agentId;
 		   		var titleArray = ['UpdateTime', '< 24 hrs', '< 48 hrs','> 48 hrs'];
 		   		var hoverExplaination = ['# of tickets'];
 		   		//var numberOfAgedTicket = numOfAgedTicket;
@@ -455,7 +473,6 @@ $(document).ready(function(){
 		    // json call to get all agents information 
 		    $.post("php/SQLselect.php", {teamId: teamIdToLoad}, function(data){
 		    	
-			
 		    	var returnArray = JSON.parse(data);
 		    	var allAgentArray = [];
 		    	allAgentArray[0]=returnArray[0];
@@ -485,14 +502,13 @@ $(document).ready(function(){
 		    addDropButton();
 			appendStatsSum();
 		    });
-		    
 		    $.post("php/storeTicket.php",{postTeam: teamIdToLoad});
 	  }
 	   
 	   //Main methods to run
-	  appendMonday(); 
+	  appendMonday();
+	  getLastUpdatedTime();
 	  loadTable(teamId);
-	  
 	  //store all tickets that have not been stored in database 
 	  
 });

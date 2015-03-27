@@ -6,6 +6,8 @@
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script type="text/javascript">
+
+/*
 	function doSomething(){
 		//var emailArray = ["HermanWu","MarkRusinski","NileshPawar"];
 		testFunction("haha", "monday", alertFunc);
@@ -20,11 +22,15 @@
 		//return mondayTimeToPrint.getFullYear()+"-"+(mondayTimeToPrint.getMonth()+1)+"-"+mondayTimeToPrint.getDate();
 	}
 	
-	
-	var alertFunc = function(data){
-		alert(data);
-	}
-
+*/	
+function sayAlice() {
+	var alice = 'Hello Alice';
+    var sayAlert = function() { alert(alice); }
+    // Local variable that ends up within closure
+    
+    return sayAlert;
+}
+sayAlice();
 </script>
 </head>
 

@@ -1,4 +1,6 @@
 <?php 
+
+
 /*
 //hostgator 
 $servername = "localhost";
@@ -21,5 +23,6 @@ $password = "abcd.1234";
 $dbname = "statsPortal"; 
 */
 
-//$con=mysqli_connect("localhost","zwu36_admin","wzx131106", "zwu36_statsPortal");
+$PDOconnection = new PDO("mysql:host=$servername;dbname=$dbname", $username,$password);
+$PDOconnection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 ?>

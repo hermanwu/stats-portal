@@ -2,7 +2,7 @@
 <html>
 <head>
 	<link rel="shortcut icon" href="img/favicon.ico">
-	<meta http-equiv="refresh" content="900">
+	<meta http-equiv="refresh" content="500">
 	<title>AirWatch Stats Portal</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
@@ -12,6 +12,9 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	
 <style>
+html{
+    overflow-y:scroll;
+}
 body{
     margin: 0 auto;
     max-width: 950px;
@@ -155,8 +158,8 @@ a:link {
     </div>
     
 	<div style="position:relative; padding:0px 0px 10px 0px" >
-		<div style="display:inline-block">
-				--Page will update automatically every 15 mins
+		<div id="lastUpdatedTime" style="display:inline-block">
+				--Page will refresh automatically every 15 mins; Last Update Time:  
 		 </div>
 		 <div  style="display:inline-block; position:absolute; right:0;">
 		   		<select id="teamDropDownBox" style="height:30px; width:120px">
@@ -174,7 +177,7 @@ a:link {
 			<tr>
 				<th><button id="detailButtonClone" class="detailButton btn">show details</button></th>
 				<th>Weekly Solved</th>
-				<th>Total Ticket</th>
+				<th>Total  Ticket</th>
 				<th colspan="6">Ticket Age</th>
 				<th colspan="2">Score</th>
 			</tr>
